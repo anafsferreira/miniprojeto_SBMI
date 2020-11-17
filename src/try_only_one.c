@@ -4,7 +4,6 @@
 
 int main(void)
 {
-
     DDRB |= (1 << 1);
     // PB1 is now an output - corresponds to OCR0A
 
@@ -25,5 +24,6 @@ int main(void)
 
     while(1)
     {
+        // fazer isto
     }
 }
