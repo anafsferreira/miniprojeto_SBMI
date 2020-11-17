@@ -6,17 +6,17 @@
         {
             "name": "Win32",
             "includePath": [
-                "c:/Users/ana_f/Desktop/miniprojeto/include",
-                "c:/Users/ana_f/Desktop/miniprojeto/src",
-                "C:/Users/ana_f/.platformio/packages/tool-unity",
+                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/include",
+                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/src",
+                "C:/Users/dtrdu/.platformio/packages/tool-unity",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "c:/Users/ana_f/Desktop/miniprojeto/include",
-                    "c:/Users/ana_f/Desktop/miniprojeto/src",
-                    "C:/Users/ana_f/.platformio/packages/tool-unity",
+                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/include",
+                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/src",
+                    "C:/Users/dtrdu/.platformio/packages/tool-unity",
                     ""
                 ]
             },
@@ -29,7 +29,7 @@
             "intelliSenseMode": "gcc-x64",
             "cStandard": "c11",
             "cppStandard": "c++11",
-            "compilerPath": "C:/Users/ana_f/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerPath": "C:/Users/dtrdu/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
             "compilerArgs": [
                 "-mmcu=atmega328p",
                 ""
