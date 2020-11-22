@@ -6,16 +6,16 @@
         {
             "name": "Win32",
             "includePath": [
-                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/include",
-                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/src",
+                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/include",
+                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/src",
                 "C:/Users/dtrdu/.platformio/packages/tool-unity",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/include",
-                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto/miniprojeto_SBMI/src",
+                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/include",
+                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/src",
                     "C:/Users/dtrdu/.platformio/packages/tool-unity",
                     ""
                 ]
