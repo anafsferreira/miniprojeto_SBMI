@@ -6,6 +6,8 @@
 #include "serial_printf.h"
 #include <avr/interrupt.h>
 
+volatile uint8_t T2;
+volatile uint8_t T1 = 0;
 
 void init_tc1(void){
       TCCR1B = 0; // stop tc1
@@ -36,16 +38,29 @@ void init_tc0(void){
 }
 
 ISR(TIMER1_COMPA_vect){
-      
+      T1++;
+}
+
+ISR(TIMER0_COMPA_vect){
+      if(T2)T2--; //100 us
 }
 
 int main(void){
 
-
+       
 
       while(1){
 
-
+            if(T1)
+            {
+                  tmp=10
+                  cli();
+                  T2=tmp; //ou seja correu 10 vezes 100 us ou seja 1 ms, ou seja posicao inicial
+                  sei();
+                  if(T2==0)
+                  T2=200-tmp;
+                  if(T2=0)
+            }
 
 
       }
