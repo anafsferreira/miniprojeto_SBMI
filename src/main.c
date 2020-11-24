@@ -1,6 +1,4 @@
-/*******************************************
- * Example 3
- *******************************************/
+
 
 #include <avr/io.h>
 #include <util/delay.h>
@@ -9,55 +7,46 @@
 #include <avr/interrupt.h>
 
 
-// up to 8 servos on portB sequentially pulsed
-// uses timer1 in CTC mode
-// synchro gap is constant, 6 ms
-// frame is variable
-// min.frame = 8*1+6 = 14 ms
-// max.frame = 8*2+6 = 22 ms
+void init_tc1(void){
+      TCCR1B = 0; // stop tc1
+      TIFR1 |=(7 << TOV1); // clear pending intrpt
+      /* Set Fast PWM non-inverting mode */
+	TCCR1A |= (1 << WGM11) | (1 << COM1A1);
+	TCCR1B |= (1 << WGM12) | (1 << WGM13) ;
+      //init counter
+      TCNT1 = 0;
+      ICR1 = 1250; // 0,02* 16 MHz / 256
 
-// Mega88, 8 MHz
+      TIMSK1 |= (1 << OCIE0A);
+      // Prescaler 256
+      TCCR1B |= (1 << CS12);
 
-
-// initial pulse times in us for servo 0, 1, 2...7 (last value 6000 is the synchro gap)
-unsigned int servo[3] = {1500, 1500, 6000};
-
-//----------------------------------------------------------------
-
-ISR(TIMER1_COMPA_vect)
-{
-static unsigned char servo_num;
-
-   PORTB = (1<<(servo_num + 1 ));          // end pulse for servo (n), start pulse for servo (n+1)            
-   OCR1A = servo[servo_num];        // set width of pulse
-   servo_num++;                     // prepare next servo 
-   if(servo_num > 2) servo_num = 0; // again from servo 0;
 }
 
+void init_tc0(void){
+      TCCR0B = 0;
+      TIFR0 |= (7 << TOV0);
+      TCCR0A |= (1 << WGM01);// modo ctc
 
-////////////////// MAIN //////////////////////////////
-int main (void)
-{
-      DDRB = 255;                        // portb output
-      TCCR1B |= (1<<WGM12) | (1<<CS11);  // pwm mode 4,CTC, prescale=8
-      TIMSK1 |= (1<<OCIE1A);             // enable T1_compareA interrupt 
-      TCNT1 = 65530;
-      sei();   
+      TCNT0 = 0;
+      OCR0A = 25; // 100 us * 16Mhz/ 64
 
-// test 
-      while(1)                   
-      {
-         servo[0] = 1000;          // servos 0 and 1 left
-         servo[1] = 1000;
-         _delay_ms(2000);
+      TIMSK0 |= (1 << OCIE0A);
+      TCCR1B |= (1 << CS01) | (1 << CS00); // prescaler 64
+}
 
-         servo[0] = 1500;          // servos 0 and 1 center
-         servo[1] = 1500;
-         _delay_ms(2000);
+ISR(TIMER1_COMPA_vect){
+      
+}
 
-         servo[0] = 2000;          // servos 0 and 1 right
-         servo[1] = 2000;
-         _delay_ms(2000);  
+int main(void){
+
+
+
+      while(1){
+
+
+
+
       }
 }
-////////////////// END MAIN //////////////////////////
