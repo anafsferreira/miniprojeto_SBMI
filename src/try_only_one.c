@@ -1,30 +1,36 @@
 #define F_CPU 16000000
 #include <avr/io.h>
 #include <util/delay.h>
-void Wait()
-{
-   uint16_t i;
-   for(i=0;i<50;i++)
-   {
-      _delay_loop_2(0);
-      _delay_loop_2(0);
-      _delay_loop_2(0);
-   }
+
+void init_tc1(void){
+    TCCR1B = 0; // stop tc1
+    TIFR1 |=(7 << TOV1); // clear pending intrpt
+    /* Set Fast PWM non-inverting mode */
+	TCCR1A = (1 << WGM11) | (1 << COM1A1);
+	TCCR1B |= (1 << WGM12) | (1 << WGM13) ;
+    //init counter
+    TCNT1 = 0;
+    ICR1 = 1250; // 0,02* 16 MHz / 256
+
+    //TIMSK1 |= (1 << OCIE0A);
+    // Prescaler 256
+    TCCR1B |= (1 << CS12);
+
 }
-void main()
-{
-  //FOR TIMER1
-   TCCR1A|=(1<<COM1A1)|(1<<COM1B1)|(1<<WGM11);        //NON Inverted PWM
-   TCCR1B|=(1<<WGM13)|(1<<WGM12)|(1<<CS11)|(1<<CS10); //PRESCALER=64 MODE 14(FAST PWM)
-   ICR1=4999;  //fPWM=50Hz 
-   DDRD|=(1<<PD4)|(1<<PD5);   //PWM Pins as Output
-   while(1)
-   {
-      OCR1A=316;  //90 degree
-      Wait();
-      OCR1A=97;   //0 degree
-      Wait();
-     OCR1A=535;  //180 degree
-      Wait();
-   }
+
+ISR(TIMER1_COMPA_vect){
+
+}
+
+int main(void){
+    init_tc1();
+    sei();
+    DDRB |= (1 << PB3);
+    while (1)
+    {
+        OCR1A = 140; // 180
+        OCR1A = 70; // 90
+
+    }
+    
 }

@@ -4,19 +4,19 @@
             "name": "!!! WARNING !!! AUTO-GENERATED FILE, PLEASE DO NOT MODIFY IT AND USE https://docs.platformio.org/page/projectconf/section_env_build.html#build-flags"
         },
         {
-            "name": "Win32",
+            "name": "Linux",
             "includePath": [
-                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/include",
-                "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/src",
-                "C:/Users/dtrdu/.platformio/packages/tool-unity",
+                "/home/filipa/Desktop/miniprojeto_SBMI/include",
+                "/home/filipa/Desktop/miniprojeto_SBMI/src",
+                "/home/filipa/.platformio/packages/tool-unity",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/include",
-                    "c:/Users/dtrdu/Desktop/Duarte/Faculdade e Cadeiras/SBMI/Práticas/Projeto_final/miniprojeto_SBMI/src",
-                    "C:/Users/dtrdu/.platformio/packages/tool-unity",
+                    "/home/filipa/Desktop/miniprojeto_SBMI/include",
+                    "/home/filipa/Desktop/miniprojeto_SBMI/src",
+                    "/home/filipa/.platformio/packages/tool-unity",
                     ""
                 ]
             },
@@ -29,7 +29,7 @@
             "intelliSenseMode": "gcc-x64",
             "cStandard": "c11",
             "cppStandard": "c++11",
-            "compilerPath": "C:/Users/dtrdu/.platformio/packages/toolchain-atmelavr/bin/avr-gcc.exe",
+            "compilerPath": "/home/filipa/.platformio/packages/toolchain-atmelavr/bin/avr-gcc",
             "compilerArgs": [
                 "-mmcu=atmega328p",
                 ""

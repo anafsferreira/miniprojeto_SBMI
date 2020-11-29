@@ -25,8 +25,7 @@ void usart_init(void)
 
 int usart_putchar(char c, FILE *stream) 
 {
-  while (!( UCSR0A & (1 << UDRE0)))
-    ;
+  while (!( UCSR0A & (1 << UDRE0)));
   UDR0 = c;
   return 0;
 }

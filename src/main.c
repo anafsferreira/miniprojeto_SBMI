@@ -1,67 +1,106 @@
 
 
-// #include <avr/io.h>
-// #include <util/delay.h>
-// #include "timer_tools.h"
-// #include "serial_printf.h"
-// #include <avr/interrupt.h>
+#include <avr/io.h>
+#include <util/delay.h>
+#include "timer_tools.h"
+#include "serial_printf.h"
+#include <avr/interrupt.h>
 
-// volatile uint8_t T2;
-// volatile uint8_t T1 = 0;
+volatile uint8_t T2;
+volatile uint8_t T1 = 0;
+
+uint16_t servos[6] = {4000, 2000, 3000, 3000, 3000, 3000};
+uint8_t num_servo_atual = 0;
+
 
 // void init_tc1(void){
-//       TCCR1B = 0; // stop tc1
-//       TIFR1 |=(7 << TOV1); // clear pending intrpt
-//       /* Set Fast PWM non-inverting mode */
-// 	TCCR1A |= (1 << WGM11) | (1 << COM1A1);
-// 	TCCR1B |= (1 << WGM12) | (1 << WGM13) ;
-//       //init counter
-//       TCNT1 = 0;
-//       ICR1 = 1250; // 0,02* 16 MHz / 256
-
-//       TIMSK1 |= (1 << OCIE0A);
-//       // Prescaler 256
-//       TCCR1B |= (1 << CS12);
-
+//     TCCR1B = 0;
+//     TIFR1 |=(7 << TOV1);
+//     TCCR1B = (1<<WGM12) | (1<<CS11); // Modo CTC, prescaler = 8
+//     TIMSK1 |= (1<<OCIE1A);
+//     TCNT1 = 0;
+//     OCR1A = 3000; // Servo centrado
 // }
 
-// void init_tc0(void){
-//       TCCR0B = 0;
-//       TIFR0 |= (7 << TOV0);
-//       TCCR0A |= (1 << WGM01);// modo ctc
-
-//       TCNT0 = 0;
-//       OCR0A = 25; // 100 us * 16Mhz/ 64
-
-//       TIMSK0 |= (1 << OCIE0A);
-//       TCCR1B |= (1 << CS01) | (1 << CS00); // prescaler 64
-// }
 
 // ISR(TIMER1_COMPA_vect){
-//       T1++;
+//     PORTD = (1 << (num_servo_atual + 3)); // Desliga o servo atual e liga o proximo
+//     OCR1A = servos[num_servo_atual + 1]; // Time para o proximo
+//     num_servo_atual++;
+//     if(num_servo_atual == 6)
+//         num_servo_atual = 0;
 // }
 
-// ISR(TIMER0_COMPA_vect){
-//       if(T2)T2--; //100 us
-// }
+
 
 // int main(void){
+//     init_tc1();
+//     sei();
+//     DDRD = 0b00111111;
+//     for(;;){
+//         //OCR1A = 4000;
+//     }
+// }
 
-       
+// #define F_CPU 16000000
+// #include <avr/io.h>
+// #include <util/delay.h>
+// void Wait()
+// {
+//    uint16_t i;
+//    for(i=0;i<50;i++)
+//    {
+//       _delay_loop_2(0);
+//       _delay_loop_2(0);
+//       _delay_loop_2(0);
+//    }
+// }
+// void main()
+// {
+//   //FOR TIMER1
+//    TCCR1A|=(1<<COM1A1)|(1<<COM1B1)|(1<<WGM11);        //NON Inverted PWM
+//    TCCR1B|=(1<<WGM13)|(1<<WGM12)|(1<<CS11)|(1<<CS10); //PRESCALER=64 MODE 14(FAST PWM)
+//    ICR1=4999;  //fPWM=50Hz 
+//    DDRD|=(1<<PD4)|(1<<PD5);   //PWM Pins as Output
+//    while(1)
+//    {
+//       OCR1A=316;  //90 degree
+//       Wait();
+//       OCR1A=97;   //0 degree
+//       Wait();
+//      OCR1A=535;  //180 degree
+//       Wait();
+//    }
+// }
 
-//       while(1){
+// #include <avr/io.h>
+// #include <util/delay.h>
 
-//             if(T1)
-//             {
-//                   tmp=10
-//                   cli();
-//                   T2=tmp; //ou seja correu 10 vezes 100 us ou seja 1 ms, ou seja posicao inicial
-//                   sei();
-//                   if(T2==0)
-//                   T2=200-tmp;
-//                   if(T2=0)
-//             }
+// int main(void) {
+//  DDRB |= 1 << PINB1; // Set pin 9 on arduino to output
 
+//  /* 1. Set Fast PWM mode 14: set WGM11, WGM12, WGM13 to 1 */
+//  /* 3. Set pre-scaler of 8 */
+//  /* 4. Set Fast PWM non-inverting mode */
+//  TCCR1A |= (1 << WGM11) | (1 << COM1A1);
+//  TCCR1B |= (1 << WGM12) | (1 << WGM13) | (1 << CS11);
 
-//       }
+//  /* 2. Set ICR1 register: PWM period */
+//  ICR1 = 39999;
+
+//  /* Offset for correction */
+//  int offset = 800;
+
+//  /* 5. Set duty cycle */
+//  while(1) {
+//   OCR1A = 3999 + offset;
+
+//   _delay_ms(5000);
+
+//   OCR1A = 1999 - offset;
+
+//   _delay_ms(5000);
+//  }
+
+//  return 0;
 // }
