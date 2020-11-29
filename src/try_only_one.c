@@ -18,19 +18,21 @@ void init_tc1(void){
 
 }
 
-ISR(TIMER1_COMPA_vect){
 
-}
 
 int main(void){
     init_tc1();
-    sei();
-    DDRB |= (1 << PB3);
+    
+    DDRB |= (1 << PB1);
     while (1)
     {
-        OCR1A = 140; // 180
-        OCR1A = 70; // 90
-
+        
+        OCR1A = 140; // 180 - um bocado por tentativa erro
+        _delay_ms(500);
+       
+        OCR1A = 0; // 0 
+        _delay_ms(500);
+        
     }
     
 }

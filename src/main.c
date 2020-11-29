@@ -6,11 +6,11 @@
 #include "serial_printf.h"
 #include <avr/interrupt.h>
 
-volatile uint8_t T2;
-volatile uint8_t T1 = 0;
+// volatile uint8_t T2;
+// volatile uint8_t T1 = 0;
 
-uint16_t servos[6] = {4000, 2000, 3000, 3000, 3000, 3000};
-uint8_t num_servo_atual = 0;
+// uint16_t servos[6] = {4000, 2000, 3000, 3000, 3000, 3000};
+// uint8_t num_servo_atual = 0;
 
 
 // void init_tc1(void){
