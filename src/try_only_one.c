@@ -1,6 +1,15 @@
+
 #define F_CPU 16000000
 #include <avr/io.h>
 #include <util/delay.h>
+#include "timer_tools.h"
+#include "serial_printf.h"
+#include <avr/interrupt.h>
+
+#define MAX_SERVO 4200 // 2 ms
+#define MIN_SERVO 1000 // 1 ms
+#define MAX_POT 1023
+#define MIN_POT 0 
 
 void init_tc1(void){
     TCCR1B = 0; // stop tc1
@@ -10,28 +19,57 @@ void init_tc1(void){
 	TCCR1B |= (1 << WGM12) | (1 << WGM13) ;
     //init counter
     TCNT1 = 0;
-    ICR1 = 1249; // 0,02* 16 MHz / 256
+    ICR1 = 40000; // 20 ms
 
-    //TIMSK1 |= (1 << OCIE0A);
-    // Prescaler 256
-    TCCR1B |= (1 << CS12);
+    TIMSK1 |= (1 << OCIE0A);
+    // Prescaler 8
+    TCCR1B |= (1 << CS11);
 
+}
+
+void init_adc(void){
+    ADMUX |= (1 << REFS0); // definir Vref
+    ADCSRA |= (7 << ADPS0); // prescaler 128
+    ADCSRA |= (1 << ADEN); // ativar adc
+    DIDR0 |= (1 << PC0); // desativar o buffer digital
+
+}
+
+unsigned int read_ADC(uint8_t channel){
+    /* Seleciona canal e referência */
+    ADMUX = (ADMUX & 0xF0)  | (channel & 0x0F);
+
+    ADCSRA |= (1 << ADSC); // iniciar a conversao em modo manual
+
+    while(ADCSRA & ( 1 << ADSC)); // esperar pelo fim da conversão
+
+    return ADC;
 }
 
 
 
 int main(void){
-    init_tc1();
-    
+    uint16_t adc_value  = 0;
+    uint16_t m = 0;
+    uint16_t b = MIN_SERVO;
+    m = (MAX_SERVO - MIN_SERVO)/MAX_POT;
     DDRB |= (1 << PB1);
+    DDRB |= (1 << PB5); // LED
+
+    init_tc1();
+    init_adc();
+    printf_init();
+ 
     while (1)
     {
-        
-        OCR1A = 150; // 180 - um bocado por tentativa erro
-        _delay_ms(500);
-       
-        OCR1A = 0; // 0 
-        _delay_ms(500);
+        adc_value = read_ADC('0');
+        printf("%d\n", adc_value);
+        OCR1A = m * adc_value + b; // 180 - um bocado por tentativa erro
+        _delay_ms(20);
+
+        // OCR1A = 24000; // 0 
+        // _delay_ms(1000);
+
         
     }
     

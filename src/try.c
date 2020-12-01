@@ -1,8 +1,11 @@
-#include <avr/io.h>
-#include <util/delay.h>
-#include "timer_tools.h"
-#include "serial_printf.h"
-#include <avr/interrupt.h>
+// // o azul roda sempre mas a velocidades diferentes
+// // o servo preto pequeno de manha funcionava agora deixou de funcionar
+
+// #include <avr/io.h>
+// #include <util/delay.h>
+// #include "timer_tools.h"
+// #include "serial_printf.h"
+// #include <avr/interrupt.h>
 
 
 // int main(void){
