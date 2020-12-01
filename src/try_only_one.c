@@ -10,7 +10,7 @@ void init_tc1(void){
 	TCCR1B |= (1 << WGM12) | (1 << WGM13) ;
     //init counter
     TCNT1 = 0;
-    ICR1 = 1250; // 0,02* 16 MHz / 256
+    ICR1 = 1249; // 0,02* 16 MHz / 256
 
     //TIMSK1 |= (1 << OCIE0A);
     // Prescaler 256
@@ -27,7 +27,7 @@ int main(void){
     while (1)
     {
         
-        OCR1A = 140; // 180 - um bocado por tentativa erro
+        OCR1A = 150; // 180 - um bocado por tentativa erro
         _delay_ms(500);
        
         OCR1A = 0; // 0 

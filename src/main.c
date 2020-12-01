@@ -1,16 +1,16 @@
 
 
-#include <avr/io.h>
-#include <util/delay.h>
-#include "timer_tools.h"
-#include "serial_printf.h"
-#include <avr/interrupt.h>
+// #include <avr/io.h>
+// #include <util/delay.h>
+// #include "timer_tools.h"
+// #include "serial_printf.h"
+// #include <avr/interrupt.h>
 
 // volatile uint8_t T2;
 // volatile uint8_t T1 = 0;
 
-// uint16_t servos[6] = {4000, 2000, 3000, 3000, 3000, 3000};
-// uint8_t num_servo_atual = 0;
+// volatile uint16_t servos[6] = {4000, 2000, 3000, 3000, 3000, 3000};
+// volatile uint8_t num_servo_atual = 0;
 
 
 // void init_tc1(void){
@@ -24,8 +24,9 @@
 
 
 // ISR(TIMER1_COMPA_vect){
-//     PORTD = (1 << (num_servo_atual + 3)); // Desliga o servo atual e liga o proximo
-//     OCR1A = servos[num_servo_atual + 1]; // Time para o proximo
+//     PORTD = (1 << (num_servo_atual + 2)); // Desliga o servo atual e liga o proximo
+//     OCR1A = 3000; // Time para o proximo
+//     _delay_ms(2);
 //     num_servo_atual++;
 //     if(num_servo_atual == 6)
 //         num_servo_atual = 0;
@@ -36,8 +37,10 @@
 // int main(void){
 //     init_tc1();
 //     sei();
-//     DDRD = 0b00111111;
+//     printf_init();
+//     DDRD = 0b11111100;
 //     for(;;){
+//         printf("%d\n", num_servo_atual);
 //         //OCR1A = 4000;
 //     }
 // }
