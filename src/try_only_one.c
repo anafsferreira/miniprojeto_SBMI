@@ -6,8 +6,13 @@
 #include "serial_printf.h"
 #include <avr/interrupt.h>
 
-#define MAX_SERVO 4200 // 2 ms
-#define MIN_SERVO 1000 // 1 ms
+// segundo a datasheet roda no máximo 120
+// 4100 -2000 - > roda 90 graus / 45
+// 4100 - 1000 - > roda 90 + 45 // descontrola
+// 4100 - 1500 -> 90 + 15 
+
+#define MAX_SERVO 4000 // 2 ms
+#define MIN_SERVO 2000 // 1 ms
 #define MAX_POT 1023
 #define MIN_POT 0 
 
@@ -53,8 +58,8 @@ int main(void){
     uint16_t m = 0;
     uint16_t b = MIN_SERVO;
     m = (MAX_SERVO - MIN_SERVO)/MAX_POT;
-    DDRB |= (1 << PB1);
-    DDRB |= (1 << PB5); // LED
+    DDRB |= (1 << PB1); // pin 9 arduino - servo
+    
 
     init_tc1();
     init_adc();
@@ -62,13 +67,10 @@ int main(void){
  
     while (1)
     {
-        adc_value = read_ADC('0');
+        adc_value = read_ADC('0'); // ler no PC0 que corresponde ao A0
         printf("%d\n", adc_value);
         OCR1A = m * adc_value + b; // 180 - um bocado por tentativa erro
         _delay_ms(20);
-
-        // OCR1A = 24000; // 0 
-        // _delay_ms(1000);
 
         
     }
