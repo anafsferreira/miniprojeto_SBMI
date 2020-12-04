@@ -7,7 +7,7 @@
 #include <avr/interrupt.h>
 
 // segundo a datasheet roda no máximo 120
-// 4100 -2000 - > roda 90 graus / 45
+// 4100 -2000 - > roda 45
 // 4100 - 1000 - > roda 90 + 45 // descontrola
 // 4100 - 1500 -> 90 + 15 
 
