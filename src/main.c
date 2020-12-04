@@ -9,14 +9,11 @@
 volatile uint8_t T2;
 volatile uint8_t T1 = 0;
 
-<<<<<<< HEAD
-// volatile uint16_t servos[6] = {32000, 24000, 16500, 32000, 24000, 16500, };
-// volatile uint8_t num_servo_atual = 0;
-=======
+
 // 20 ms = 40000
 volatile uint16_t servos[7] = {4000, 2000, 4000, 2000, 4000, 2000, 22000 };
 volatile uint8_t num_servo_atual = 1;
->>>>>>> 71083a461236669d2835bd0e5b247b000efd503b
+
 
 
 void init_tc1(void){
@@ -37,17 +34,7 @@ void init_tc1(void){
 
 
 
-<<<<<<< HEAD
-// ISR(TIMER1_COMPA_vect){
-    // if(num_servo_atual < 6)
-//     PORTB = (1 << (num_servo_atual)); // Desliga o servo atual e liga o proximo
-//     OCR1A = servos[num_servo_atual]; // Time para o proximo
-//     num_servo_atual++;
-//     if(num_servo_atual == 7)
-            // OCR1A - > tempo restante
-//         num_servo_atual = 0;
-// }
-=======
+
 ISR(TIMER1_COMPA_vect){
      // Desliga o servo atual e liga o proximo
     if(num_servo_atual < 6){
@@ -60,7 +47,6 @@ ISR(TIMER1_COMPA_vect){
         OCR1A = servos[num_servo_atual];
         num_servo_atual = 0;
         PORTB &= ~(0xFF);
->>>>>>> 71083a461236669d2835bd0e5b247b000efd503b
 
     }
         
