@@ -1,38 +1,85 @@
-// // o azul roda sempre mas a velocidades diferentes
-// // o servo preto pequeno de manha funcionava agora deixou de funcionar
 
+// #define F_CPU 16000000
 // #include <avr/io.h>
 // #include <util/delay.h>
 // #include "timer_tools.h"
 // #include "serial_printf.h"
 // #include <avr/interrupt.h>
 
+// // segundo a datasheet roda no máximo 120
+// // 4000 -2000 - > roda 90 graus / 45
+// // 4100 - 1000 - > roda 90 + 45 // descontrola
+// // 4100 - 1500 -> 90 + 15 
 
-// int main(void){
+// #define MAX_SERVO 4000 // 2 ms
+// #define MIN_SERVO 2000 // 1 ms
+// #define MAX_POT 1023
+// #define MIN_POT 0 
 
-//     DDRB = 0xFF;
-//     // Fast PWM
-//     TCCR1A = (1 << WGM11)| (1 << COM1A1);; 
+// void init_tc1(void){
+//     TCCR1B = 0; // stop tc1
+//     TIFR1 |=(7 << TOV1); // clear pending intrpt
+//     /* Set Fast PWM non-inverting mode */
+// 	TCCR1A = (1 << WGM11) | (1 << COM1A1);
 // 	TCCR1B |= (1 << WGM12) | (1 << WGM13) ;
-//     // Prescaler 256
-//     TCCR1B |= (1 << CS12);
+//     //init counter
+//     TCNT1 = 0;
+//     ICR1 = 40000; // 20 ms
+
 //     TIMSK1 |= (1 << OCIE0A);
-//     ICR1 = 1249; // 0,02* 16 MHz / 256
+//     // Prescaler 8
+//     TCCR1B |= (1 << CS11);
 
-//     sei();
-//     while(1){
-
-//         if(TCNT1 >= 25 && TCNT1 <= 150){
-//             if(TCNT1 >= 125 && bit_is_set(PORTB, PINB0)) PORTB &= ~(1 << PINB0); // Passado 2 ms o sinal passa a OFF // assim roda tudo
-//             if(TCNT1 >= 60 && bit_is_set(PORTB, PINB1)) PORTB &= ~(1 << PINB1);// se for 60 já só roda cerca de 90 º
-//             if(TCNT1 >= 80 && bit_is_set(PORTB, PINB2)) PORTB &= ~(1 << PINB2); 
-//             if(TCNT1 >= 100 && bit_is_set(PORTB, PINB3)) PORTB &= ~(1 << PINB3);
-//             if(TCNT1 >= 30 && bit_is_set(PORTB, PINB4)) PORTB &= ~(1 << PINB4);
-//         }
-
-//     }
 // }
 
-// ISR(TIMER1_COMPA_vect){
-//     PORTB |= 0xFF; // Todos ON
+// void init_adc(void){
+//     ADMUX |= (1 << REFS0); // definir Vref
+//     ADCSRA |= (7 << ADPS0); // prescaler 128
+//     ADCSRA |= (1 << ADEN); // ativar adc
+//     DIDR0 |= (1 << PC0); // desativar o buffer digital
+
+// }
+
+// unsigned int read_ADC(uint8_t channel){
+//     /* Seleciona canal e referência */
+//     ADMUX = (ADMUX & 0xF0)  | (channel & 0x0F);
+
+//     ADCSRA |= (1 << ADSC); // iniciar a conversao em modo manual
+
+//     while(ADCSRA & ( 1 << ADSC)); // esperar pelo fim da conversão
+
+//     return ADC;
+// }
+
+
+
+// int main(void){
+//     uint16_t adc_value  = 0, tmp = 0;
+//     float m = 0;
+//     uint16_t b = MIN_SERVO;
+//     m = (float)(MAX_SERVO - MIN_SERVO)/(float)MAX_POT;
+//     DDRB |= (1 << PB1); // pin 9 arduino - servo
+
+    
+
+//     init_tc1();
+//     init_adc();
+//     printf_init();
+ 
+//     while (1)
+//     {
+//         adc_value = read_ADC(0); // ler no PC0 que corresponde ao A0
+//         //printf("%d\n", adc_value);
+//         tmp = m * adc_value + b;
+//         printf("%d\n", tmp);
+        
+//         OCR1A = 1000; // 180 - um bocado por tentativa erro
+//         _delay_ms(50);
+//         OCR1A = 3800;
+        
+        
+
+        
+//     }
+    
 // }
