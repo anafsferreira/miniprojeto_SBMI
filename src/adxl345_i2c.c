@@ -1,11 +1,6 @@
 
-// #include <avr/io.h>
-// #include "i2c.h"
-
-// #include <util/delay.h>
-// #include <math.h>
-// #include <avr/interrupt.h>
-// #include "serial_printf.h"
+// #include <i2c.h>
+// #include <adxl345_i2c.h>
 
 // #define PI 3.14159265358979323846
 // #define RANGE_2G            0b00001000 
@@ -31,8 +26,7 @@
 
 
 // uint8_t ADXL345_ID;
-// uint8_t lsb, msb;
-// uint16_t x_acc1, y_acc1, z_acc1;
+
 
 // void ADXL345_init(uint8_t range, uint8_t data_rate)
 // {
@@ -78,52 +72,4 @@
 //     data = (int16_t)buf[1]<<8;
 //     data += (int16_t)buf[0];
 //     return(data);
-// }
-
-// int main(void)
-// {
-    
-//     int16_t datax, datay, dataz;
-//     float X_out, Y_out, Z_out, roll, pitch, rollF = 0, pitchF = 0;
-//     int8_t offx, offy, offz;
-//     printf_init();
-//     i2c_init(100000);
-//     ADXL345_init(RANGE_2G, DATA_RATE_100);
-
-//     // offsets
-//     // datax = 17
-//     offx= (-17/4);
-//     printf("%d\n",offx);
-//     i2c_write(I2C_ADDR, 1, OFSX, &offx);
-
-//     offy= (23/4);
-//     printf("%d\n",offy);
-//     i2c_write(I2C_ADDR, 1, OFSY, &offy);
-
-
-//     while(1){
-//         datax = read_Xdata();
-//         X_out = (float)datax/256.0;
-//         datay = read_Ydata();
-//         Y_out = (float)datay/256.0;
-//         dataz = read_Zdata();
-//         Z_out = (float)dataz/256.0;
-
-         
-//         // roll and pitch
-        
-//         roll = atan2(Y_out , Z_out) * 180 / PI;
-//         pitch = atan2((- X_out) , sqrt(pow(Y_out, 2) + pow(Z_out, 2))) * 180 / PI;
-//         //printf("%d\t %d\t %d\n", datax, datay, dataz);
-//         //printf("%f\t %f\t %f\n", X_out, Y_out, Z_out);
-       
-
-        
-//         // Low-pass filter
-//         rollF = 0.94 * rollF + 0.06 * roll;
-//         pitchF = 0.94 * pitchF + 0.06 * pitch;
-
-//          printf("RollF: %f\t PitchF: %f\n", rollF, pitchF);
-//         _delay_ms(200);
-//     }
 // }
