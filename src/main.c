@@ -5,30 +5,9 @@
 #include "timer_tools.h"
 #include "serial_printf.h"
 #include <avr/interrupt.h>
-#include "i2c.h"
+#include "adxl345_i2c.h"
+#include "adc_potenciometer.h"
 
-
-#define PI 3.14159265358979323846
-#define RANGE_2G            0b00001000 
-#define MEASURE             0x08 
-#define DATA_RATE_100       0x0A
-#define I2C_ADDR            0x53
-#define DEVID               0x00
-#define POWER_CTL           0x2D
-#define BW_RATE             0x2C
-#define DATA_FORMAT         0x31
-#define DATAX               0x32
-#define DATAX0              0x32 // X-Axis Data 0
-#define DATAX1              0x33 // X-Axis Data 1
-#define DATAY               0x34
-#define DATAY0              0x34 // Y-Axis Data 0
-#define DATAY1              0x35 // Y-Axis Data 1
-#define DATAZ               0x36
-#define DATAZ0              0x36 // Z-Axis Data 0
-#define DATAZ1              0x37 // Z-Axis Data 1
-#define OFSX                0x1E
-#define OFSY                0x1F
-#define OFSZ                0x20
 
 // #define MAX_SERVO 4000 // 2 ms // mão fechada
 //#define MIN_SERVO 2000 // 1 ms // mão aberta
@@ -37,13 +16,14 @@
 #define THRESHOLD_SERVO 30
 
 // 20 ms = 40000
-volatile uint16_t servos[7] = {4000, 2000, 4000, 2000, 4000, 2000, 22000};
+volatile uint16_t servos[7] = {4000, 2000, 4000, 2000, 4000, 2000, 22000}; // alterar ainda a posição de inicio
 volatile uint8_t num_servo_atual = 1;
 volatile uint16_t servo_pos_ant[6] = {1023, 1023, 1023, 1023, 1023, 1023};
 uint16_t MAX_SERVO[6] = {4330, 4330, 4330, 4330, 4330, 4330};
 uint16_t MIN_SERVO[6] = {1670, 1670, 1670, 1670, 1670, 1670};
-uint16_t MAX_POT[6]= {605, 425, 440, 445, 480, 140};
-uint16_t MIN_POT[6] ={357, 262, 177, 305, 190, 7};
+uint16_t MAX_POT[6]= {605, 425, 440, 445, 480, 140}; // mão aberta, palma da mão para cima
+uint16_t MIN_POT[6] ={357, 262, 177, 305, 190, 7}; // mão fechada, palma da mão para baixo
+
 void init_tc1(void)
 {
     TCCR1B = 0;           // stop tc1
@@ -77,74 +57,6 @@ ISR(TIMER1_COMPA_vect)
     }
 }
 
-void init_adc(void)
-{
-    ADMUX |= (1 << REFS0);  // definir Vref
-    ADCSRA |= (7 << ADPS0); // prescaler 128
-    ADCSRA |= (1 << ADEN);  // ativar adc
-    DIDR0 |= 0xFF;          // desativar o buffer digital
-}
-
-unsigned int read_ADC(uint8_t channel)
-{
-    /* Seleciona canal e referência */
-    ADMUX = (ADMUX & 0xF0) | (channel & 0x0F);
-
-    ADCSRA |= (1 << ADSC); // iniciar a conversao em modo manual
-
-    while (ADCSRA & (1 << ADSC)); // esperar pelo fim da conversão
-
-    return ADC;
-}
-
-uint8_t ADXL345_ID;
-
-
-void ADXL345_init(uint8_t range, uint8_t data_rate)
-{
-    uint8_t var = 0;
-    i2c_read(I2C_ADDR, 1, DEVID, &ADXL345_ID);
-    printf("Device ID=%d\n\r", ADXL345_ID);
-    i2c_write(I2C_ADDR, 1, POWER_CTL, &var);
-    i2c_write(I2C_ADDR, 1, BW_RATE, &data_rate);
-    i2c_write(I2C_ADDR, 1, DATA_FORMAT, &range);
-    var = MEASURE;
-    i2c_write(I2C_ADDR, 1, POWER_CTL, &var);
-    _delay_ms(20);
-}
-
-int16_t read_Xdata(void){
-
-    int16_t data;
-    uint8_t buf[2];
-
-    i2c_read(I2C_ADDR, 2, DATAX, buf);
-    data = (int16_t)buf[1]<<8;
-    data += (int16_t)buf[0];
-    return(data);
-}
-
-int16_t read_Ydata(void){
-
-    int16_t data;
-    uint8_t buf[2];
-
-    i2c_read(I2C_ADDR, 2, DATAY, buf);
-    data = (int16_t)buf[1]<<8;
-    data += (int16_t)buf[0];
-    return(data);
-}
-
-int16_t read_Zdata(void){
-
-    int16_t data;
-    uint8_t buf[2];
-
-    i2c_read(I2C_ADDR, 2, DATAZ, buf);
-    data = (int16_t)buf[1]<<8;
-    data += (int16_t)buf[0];
-    return(data);
-}
 
 // function that reads the value of each potenciometer that controls each servo
 void updatePositions()
@@ -183,6 +95,10 @@ void updatePositions()
                 roll = atan2(Y_out , Z_out) * 180 / PI;
                 pitch = atan2((- X_out) , sqrt(pow(Y_out, 2) + pow(Z_out, 2))) * 180 / PI;
                 servo_pos = m * roll + b;
+
+                // filtro low-pass
+                rollF = 0.94*rollF + 0.06* roll;
+                pitchF = 0.94*pitchF + 0.06 * pitch;
             }
 
             if (abs(servo_pos_ant[channel] - servo_pos) > THRESHOLD_SERVO)
