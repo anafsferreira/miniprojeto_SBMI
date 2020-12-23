@@ -171,7 +171,7 @@ void updatePositions()
                 else adc_value = read_ADC(channel);
                 servo_pos = m * adc_value + b;
             }
-            else if(channel == 5){
+            else if(channel == 5){ // read accelerometer
                 datax = read_Xdata();
                 X_out = (float)datax/256.0;
                 datay = read_Ydata();
