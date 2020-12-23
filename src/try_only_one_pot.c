@@ -1,20 +1,24 @@
 
 // #define F_CPU 16000000
 // #include <avr/io.h>
+// #include <math.h>
 // #include <util/delay.h>
 // #include "timer_tools.h"
 // #include "serial_printf.h"
 // #include <avr/interrupt.h>
-
+// #include "adc_potenciometer.h"
 // // segundo a datasheet roda no máximo 120
 // // 4000 -2000 - > roda 90 graus / 45
 // // 4100 - 1500 -> 90 + 15 
 
-// #define MAX_SERVO 4330 // 2 ms
-// #define MIN_SERVO 1670 // 1 ms
-// #define MAX_POT 1023
-// #define MIN_POT 0 
+// // fechar mão - roda sentido contrário aos ponteiros do relógio
+// #define MAX_SERVO 4330 // mão fechada
+// #define MIN_SERVO 1670 // mão aberta
+// #define MAX_POT 390 // mão aberta
+// #define MIN_POT 237 // mão fechada 
 
+// uint16_t servo_pos_ant = 1023;
+// uint16_t adc_ant = 0;
 // void init_tc1(void){
 //     TCCR1B = 0; // stop tc1
 //     TIFR1 |=(7 << TOV1); // clear pending intrpt
@@ -31,32 +35,18 @@
 
 // }
 
-// void init_adc(void){
-//     ADMUX |= (1 << REFS0); // definir Vref
-//     ADCSRA |= (7 << ADPS0); // prescaler 128
-//     ADCSRA |= (1 << ADEN); // ativar adc
-//     DIDR0 |= (1 << PC0); // desativar o buffer digital
-
-// }
-
-// unsigned int read_ADC(uint8_t channel){
-//     /* Seleciona canal e referência */
-//     ADMUX = (ADMUX & 0xF0)  | (channel & 0x0F);
-
-//     ADCSRA |= (1 << ADSC); // iniciar a conversao em modo manual
-
-//     while(ADCSRA & ( 1 << ADSC)); // esperar pelo fim da conversão
-
-//     return ADC;
-// }
 
 
 
 // int main(void){
-//     uint16_t adc_value  = 0, tmp = 0;
-//     float m = 0;
-//     uint16_t b = MIN_SERVO;
-//     m = (float)(MAX_SERVO - MIN_SERVO)/(float)MAX_POT;
+//     uint16_t adc_value  = 0, tmp = 0, tmpF = 0;
+   
+    
+//     float m = 0, b = 0;
+    
+//      m = (float)(MAX_SERVO - MIN_SERVO) / (float)(MIN_POT - MAX_POT);
+//       b = (float)(MAX_SERVO - m * MIN_POT);
+
 //     DDRB |= (1 << PB1); // pin 9 arduino - servo
 
     
@@ -68,14 +58,35 @@
 //     while (1)
 //     {
 //         adc_value = read_ADC(0); // ler no PC0 que corresponde ao A0
-//         //printf("%d\n", adc_value);
+//         printf("%d\t", adc_value);
+//         if(adc_value>MAX_POT){
+//             adc_value  = MAX_POT;
+//         }
+//         else if( adc_value < MIN_POT){
+//             adc_value = MIN_POT;
+//         }
+//         else if (abs(adc_value-adc_ant)<5){
+//             adc_value = adc_ant;
+//         }
+//         else{
+//             adc_ant = adc_value;
+//         }
+
+
+//         printf("%d\n", adc_value);
         
-    
 //         tmp = m * adc_value + b;
-//         printf("%d\n", tmp);
-//         OCR1A = tmp; // 180 - um bocado por tentativa erro
+//         // filtro
+//         tmpF = 0.94 * tmpF + 0.06 * tmp;
+//         //printf("%d\n", tmp);
+//            OCR1A = tmpF;
+//         // if(abs(servo_pos_ant - tmp)>5){
+//         //    // 180 - um bocado por tentativa erro
+//         //     servo_pos_ant = tmp;
+//         // }
 
         
+
 
         
 //     }
