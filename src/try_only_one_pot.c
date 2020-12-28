@@ -12,10 +12,10 @@
 // // 4100 - 1500 -> 90 + 15 
 
 // // fechar mão - roda sentido contrário aos ponteiros do relógio
-// #define MAX_SERVO 4330 // mão fechada
-// #define MIN_SERVO 1670 // mão aberta
-// #define MAX_POT 390 // mão aberta
-// #define MIN_POT 237 // mão fechada 
+// #define MAX_SERVO 1670 // mão fechada
+// #define MIN_SERVO 4330 // mão aberta
+// #define MAX_POT 1023 // mão aberta
+// #define MIN_POT 0 // mão fechada 
 
 // uint16_t servo_pos_ant = 1023;
 // uint16_t adc_ant = 0;
@@ -58,6 +58,7 @@
 //     while (1)
 //     {
 //         adc_value = read_ADC(0); // ler no PC0 que corresponde ao A0
+//         _delay_ms(10);
 //         printf("%d\t", adc_value);
 //         if(adc_value>MAX_POT){
 //             adc_value  = MAX_POT;
@@ -78,8 +79,8 @@
 //         tmp = m * adc_value + b;
 //         // filtro
 //         tmpF = 0.94 * tmpF + 0.06 * tmp;
-//         //printf("%d\n", tmp);
-//            OCR1A = tmpF;
+        
+//         OCR1A = tmpF;
 //         // if(abs(servo_pos_ant - tmp)>5){
 //         //    // 180 - um bocado por tentativa erro
 //         //     servo_pos_ant = tmp;
