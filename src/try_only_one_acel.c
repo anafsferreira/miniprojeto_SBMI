@@ -37,7 +37,7 @@
 // {
 //     int8_t offx, offy, offz;
 //     float m = 0, b = 0;
-//     uint16_t servo_pos = 0;
+//     uint16_t servo_pos = 0, servo_posF = 0;
 //     m = (float)(MAX_SERVO - MIN_SERVO) / (float)(MIN_POT - MAX_POT);
 //     int16_t datax, datay, dataz;
 //     float X_out, Y_out, Z_out, roll, pitch, rollF = 0, pitchF = 0;
@@ -80,15 +80,18 @@
 //         }
 
 //         printf("%f\t", roll);
+        
 //         if (roll > MAX_POT && roll < 300)
 //         {
 //             roll = MAX_POT;
+//             roll_ant = roll;
 //         }
 //         else if (roll < MIN_POT || roll >= 300)
 //         {
 //             roll = MIN_POT;
+//             roll_ant = roll;
 //         }
-//         else if (abs(roll - roll_ant) < 5)
+//         else if (fabs(roll - roll_ant) < 1)
 //         {
 //             roll = roll_ant;
 //         }
@@ -96,11 +99,13 @@
 //         {
 //             roll_ant = roll;
 //         }
+//         printf("%f\t", fabs(roll - roll_ant) );
+//         printf("%f\t", roll_ant);
 //         printf("%f\n", roll);
 
 //         servo_pos = m * roll + b;
-
-//         OCR1A = servo_pos; // 180 - um bocado por tentativa erro
+//         servo_posF = 0.2 * servo_posF + 0.8 * servo_pos;
+//         OCR1A = servo_posF; // 180 - um bocado por tentativa erro
 //         _delay_ms(200);
 //     }
 // }

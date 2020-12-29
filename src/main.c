@@ -18,6 +18,7 @@
 volatile uint16_t servos[7] = {1670, 1670, 1670, 1670, 1670, 1670, 29980}; // alterar ainda a posição de inicio
 volatile uint8_t num_servo_atual = 1;
 volatile uint16_t servo_pos_ant[6] = {1023, 1023, 1023, 1023, 1023, 1023};
+volatile float roll_ant= 0;
 // int16_t MAX_SERVO[6] = {4330, 4330, 4330, 4330, 4330, 4330};
 int16_t MIN_SERVO[6] = {4330, 4330, 4330, 4330, 4330, 4330};
 int16_t MAX_SERVO[6] = {1670, 1670, 1670, 1670, 1670, 1670};
@@ -63,6 +64,8 @@ void updatePositions()
     uint16_t sum = 0;
     float m = 0, b = 0;
     uint16_t adc_value = 0, adc_ant = 0, servo_pos = 0;
+    int16_t datax, datay, dataz;
+    float X_out, Y_out, Z_out, roll, pitch, rollF = 0, pitchF = 0;
     for (uint8_t channel = 0; channel < 7; channel++)
     { // todas as posições do array servos[]
 
@@ -71,43 +74,80 @@ void updatePositions()
 
             m = (float)(MAX_SERVO[channel] - MIN_SERVO[channel]) / (float)(MIN_POT[channel] - MAX_POT[channel]);
             b = (float)(MAX_SERVO[channel] - m * MIN_POT[channel]);
+            if (channel < 5)
+            {
+                if (channel == 4)
+                {
+                    adc_value = read_ADC(channel + 2);
+                }
+                else
+                    adc_value = read_ADC(channel);
 
-            if (channel == 4)
-            {
-                adc_value = read_ADC(channel + 2);
-            }
-            else
-                adc_value = read_ADC(channel);
+                if (adc_value > MAX_POT[channel])
+                {
+                    adc_value = MAX_POT[channel];
+                }
+                else if (adc_value < MIN_POT[channel])
+                {
+                    adc_value = MIN_POT[channel];
+                }
+                else if (abs(adc_value - adc_ant) < 5)
+                {
+                    adc_value = adc_ant;
+                }
+                else
+                {
+                    adc_ant = adc_value;
+                }
 
-            if (channel == 4)
-                printf("%d\t", adc_value);
-            if (adc_value > MAX_POT[channel])
-            {
-                adc_value = MAX_POT[channel];
+                servo_pos = m * adc_value + b;
+                // filtro
+                // if(channel == 1) printf("Servos filtro: %d\t", servo_posF[channel]);
+                servo_posF[channel] = 0.94 * servo_posF[channel] + 0.06 * servo_pos;
             }
-            else if (adc_value < MIN_POT[channel])
-            {
-                adc_value = MIN_POT[channel];
-            }
-            else if (abs(adc_value - adc_ant) < 5)
-            {
-                adc_value = adc_ant;
-            }
-            else
-            {
-                adc_ant = adc_value;
-            }
+            else if (channel == 5)
+            { // read acelerometer
+                datax = read_Xdata();
+                X_out = (float)datax / 256.0;
+                datay = read_Ydata();
+                Y_out = (float)datay / 256.0;
+                dataz = read_Zdata();
+                Z_out = (float)dataz / 256.0;
+                // roll and pitch
 
-            if (channel == 4)
-                printf("%d\n", adc_value);
-            servo_pos = m * adc_value + b;
-            // filtro
-            // if(channel == 1) printf("Servos filtro: %d\t", servo_posF[channel]);
-            servo_posF[channel] = 0.94 * servo_posF[channel] + 0.06 * servo_pos;
+                roll = atan2(Y_out, Z_out) * 180 / PI;
+                pitch = atan2((-X_out), sqrt(pow(Y_out, 2) + pow(Z_out, 2))) * 180 / PI;
+                if (roll < 0)
+                {
+                    roll = roll + 360;
+                }
+
+                printf("%f\t", roll);
+                if (roll > MAX_POT[channel] && roll < 300)
+                {
+                    roll = MAX_POT[channel];
+                    roll_ant = roll;
+                }
+                else if (roll < MIN_POT[channel] || roll >= 300)
+                {
+                    roll = MIN_POT[channel];
+                    roll_ant = roll;
+                }
+                else if (fabs(roll - roll_ant) < 1)
+                {
+                    roll = roll_ant;
+                }
+                else
+                {
+                    roll_ant = roll;
+                }
+                printf("%f\t", roll);
+                printf("%f\n", roll_ant);
+
+                servo_pos =  m * roll + b;
+                servo_posF[channel] = 0.2 * servo_posF[channel] + 0.8 * servo_pos;
+            }
             sum = sum + servo_posF[channel];
-            // if(channel == 1){
-            //     printf("servo_pos: %d\t servo_pos_F: %d\n", servo_pos, servo_posF[channel]);
-            // }
             servos[channel] = servo_posF[channel]; // atualizar posição
             servo_pos_ant[channel] = servo_posF[channel];
             //servo_posF = 0;
@@ -129,6 +169,20 @@ int main(void)
     init_adc(); // iniciar ADC
     printf_init();
 
+int8_t offx, offy, offz;
+    printf_init();
+    i2c_init(100000);
+    ADXL345_init(RANGE_2G, DATA_RATE_100);
+
+    // offsets
+    // datax = 17
+    offx = (-17 / 4);
+    printf("%d\n", offx);
+    i2c_write(I2C_ADDR, 1, OFSX, &offx);
+
+    offy = (23 / 4);
+    printf("%d\n", offy);
+    i2c_write(I2C_ADDR, 1, OFSY, &offy);
     while (1)
     {
         updatePositions();
