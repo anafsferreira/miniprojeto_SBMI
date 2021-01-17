@@ -11,7 +11,7 @@
 // #define MAX_POT 800
 // #define MIN_POT 100
 #define THRESHOLD 30
-#define MEASURES_NUM_ACCEL 5
+#define MED_FILTER_KERNEL 5
 #define data_size 6
 // 20 ms = 40000
 // volatile uint16_t servos[7] = {4000, 2000, 4000, 2000, 4000, 2000, 22000};
@@ -24,8 +24,12 @@ volatile float roll_ant = 0;
 // int16_t MAX_SERVO[6] = {4330, 4330, 4330, 4330, 4330, 4330};
 int16_t MIN_SERVO[6] = {4330, 4330, 4330, 4330, 4330, 4800};
 int16_t MAX_SERVO[6] = {1670, 1670, 1670, 1670, 1670, 1088};
-int16_t MAX_POT[6] = {440, 330, 440, 470, 480, 140}; // mão aberta, palma da mão para cima
-int16_t MIN_POT[6] = {350, 230, 177, 280, 190, 7};   // mão fechada, palma da mão para baixo
+// int16_t MAX_POT[6] = {440, 330, 440, 470, 480, 140}; // mão aberta, palma da mão para cima
+// int16_t MIN_POT[6] = {350, 230, 177, 280, 190, 7};   // mão fechada, palma da mão para baixo
+int16_t MAX_POT[6] = {0, 0, 0, 0, 0, 140};              // inicializar com valor baixo para subir ate a um max
+int16_t MIN_POT[6] = {1023, 1023, 1023, 1023, 1023, 7}; // inicializar com valor alto para descer ate um minimo
+
+
 uint16_t servo_posF[6] = {0, 0, 0, 0, 0, 0};
 void init_tc1(void)
 {
@@ -68,7 +72,7 @@ void updatePositions()
     uint16_t adc_value = 0, adc_ant = 0, servo_pos = 0;
     int16_t datax, datay, dataz;
     float X_out, Y_out, Z_out, roll, pitch, rollF = 0, pitchF = 0;
-    float filter[data_size][MEASURES_NUM_ACCEL];
+    float filter[data_size][MED_FILTER_KERNEL];
     for (uint8_t channel = 0; channel < 7; channel++)
     { // todas as posições do array servos[]
 
@@ -79,7 +83,7 @@ void updatePositions()
             b = (float)(MAX_SERVO[channel] - m * MIN_POT[channel]);
             if (channel < 5)
             {
-                for (int k = 0; k < MEASURES_NUM_ACCEL; k++)
+                for (int k = 0; k < MED_FILTER_KERNEL; k++)
                 {
                     if (channel == 4)
                     {
@@ -90,7 +94,7 @@ void updatePositions()
 
                     filter[channel][k] = adc_value;
                 }
-                adc_value = filter[channel][(MEASURES_NUM_ACCEL - 1) / 2]; // mediana
+                adc_value = filter[channel][(MED_FILTER_KERNEL - 1) / 2]; // mediana
 
                 if (adc_value > MAX_POT[channel])
                 {
@@ -117,7 +121,7 @@ void updatePositions()
             else if (channel == 5)
             { // read acelerometer
 
-                for (int k = 0; k < MEASURES_NUM_ACCEL; k++)
+                for (int k = 0; k < MED_FILTER_KERNEL; k++)
                 {
                     datax = read_Xdata();
                     X_out = (float)datax / 256.0;
@@ -133,7 +137,7 @@ void updatePositions()
 
                 // roll = atan2(Y_out, Z_out) * 180 / PI;
                 // pitch = atan2((-X_out), sqrt(pow(Y_out, 2) + pow(Z_out, 2))) * 180 / PI;
-                roll = filter[channel][(MEASURES_NUM_ACCEL - 1) / 2];
+                roll = filter[channel][(MED_FILTER_KERNEL - 1) / 2];
                 if (roll < 0)
                 {
                     roll = roll + 360;
@@ -177,6 +181,37 @@ void updatePositions()
         }
     }
 }
+// function that reads the value of each potenciometer to define the max and min
+void calibration()
+{
+    uint16_t adc_value = 0;
+    float filter[6][MED_FILTER_KERNEL];
+    for (uint8_t channel = 0; channel < 5; channel++)
+    {
+
+        for (int k = 0; k < MED_FILTER_KERNEL; k++)
+        {
+            if (channel == 4)
+            {
+                adc_value = read_ADC(channel + 2);
+            }
+            else
+                adc_value = read_ADC(channel);
+
+            filter[channel][k] = adc_value;
+        }
+        adc_value = filter[channel][(MED_FILTER_KERNEL - 1) / 2]; // mediana
+
+        if (adc_value > MAX_POT[channel])
+        {
+            MAX_POT[channel] = adc_value - 20; //range para lidar com valores repentinos que sejam muito altos
+        }
+        else if (adc_value < MIN_POT[channel]) //range para lidar com valores repentinos que sejam muito baixos
+        {
+            MIN_POT[channel] = adc_value + 20;
+        }
+    }
+}
 
 int main(void)
 {
@@ -203,6 +238,17 @@ int main(void)
     i2c_write(I2C_ADDR, 1, OFSY, &offy);
     while (1)
     {
-        updatePositions();
+        //updatePositions();
+        calibration();
+         printf("MaxPot. finger# => ") ;
+            for (int i = 0; i < 6; i++){
+                printf("%d:%d  ", i, MAX_POT[i]);}
+
+            printf("\nMinPot. finger# => ") ;
+            for (int i = 0; i < 6; i++){
+                printf("%d:%d  ", i, MIN_POT[i]);}
+
+            printf("\n\n");
+            _delay_ms(200);
     }
 }
